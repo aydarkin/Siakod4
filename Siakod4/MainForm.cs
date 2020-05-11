@@ -231,6 +231,7 @@ namespace Siakod4
                     {
                         var u = nodeEdges[0].GetLinkVertice(node);
                         stack.Push(u);
+                        //удаляем ребро
                         nodeEdges[0].isDeleted = true;
                     }
                     else
@@ -239,6 +240,7 @@ namespace Siakod4
                     }
                 }
 
+                //возвращаем ребра
                 foreach (var e in edges)
                     e.isDeleted = false;
                 ShowCycl(cycl);
@@ -258,7 +260,7 @@ namespace Siakod4
                 if(temp != null)
                     VisitEdge(temp, c);
                 temp = c;
-                statusCycl.Text += $"-> {c.Text}";
+                statusCycl.Text += $"-> {c.Text} ";
             }
             graphPanel.Refresh();
         }
