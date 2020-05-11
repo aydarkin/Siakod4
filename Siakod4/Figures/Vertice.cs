@@ -17,7 +17,7 @@ namespace Siakod4.Figures
         public int Height;
 
         public string Text;
-        List<Edge> Edges;
+        public List<Edge> Edges;
 
 
         public Vertice(int x, int y, int width, int height, string text)
@@ -30,6 +30,16 @@ namespace Siakod4.Figures
 
             Edges = new List<Edge>();
         }
+
+        public IEnumerable<Edge> GetNotDeletedEdges()
+        {
+            foreach(var e in Edges)
+            {
+                if (!e.isDeleted)
+                    yield return e;
+            }
+        }
+
 
         public void RemoveEdge(Edge edge)
         {

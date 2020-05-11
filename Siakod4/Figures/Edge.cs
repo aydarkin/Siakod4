@@ -36,6 +36,16 @@ namespace Siakod4.Figures
             return distance < 5;
         }
 
+        public Vertice GetLinkVertice(Vertice current)
+        {
+            if (current == First)
+                return Second;
+            if (current == Second)
+                return First;
+
+            return null;
+        }
+
         public bool HasVertice(Vertice vertice)
         {
             return vertice == First || vertice == Second;

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.graphPanel = new System.Windows.Forms.Panel();
             this.runObhod = new System.Windows.Forms.Button();
             this.dataGrid = new System.Windows.Forms.DataGridView();
@@ -36,6 +36,8 @@
             this.deleteBtn = new System.Windows.Forms.Button();
             this.deselectBtn = new System.Windows.Forms.Button();
             this.statusObhod = new System.Windows.Forms.TextBox();
+            this.statusCycl = new System.Windows.Forms.TextBox();
+            this.eCyclBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,20 +50,20 @@
             this.graphPanel.Location = new System.Drawing.Point(14, 15);
             this.graphPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.graphPanel.Name = "graphPanel";
-            this.graphPanel.Size = new System.Drawing.Size(490, 576);
+            this.graphPanel.Size = new System.Drawing.Size(490, 543);
             this.graphPanel.TabIndex = 0;
             this.graphPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.graphPanel_Paint);
             this.graphPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.graphPanel_MouseClick);
             // 
             // runObhod
             // 
-            this.runObhod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.runObhod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.runObhod.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.runObhod.Location = new System.Drawing.Point(510, 598);
             this.runObhod.Name = "runObhod";
-            this.runObhod.Size = new System.Drawing.Size(290, 29);
+            this.runObhod.Size = new System.Drawing.Size(290, 27);
             this.runObhod.TabIndex = 2;
-            this.runObhod.Text = "Запустить обход в ширину";
+            this.runObhod.Text = "Обход в ширину";
             this.runObhod.UseVisualStyleBackColor = true;
             this.runObhod.Click += new System.EventHandler(this.runObhod_Click);
             // 
@@ -74,14 +76,14 @@
             this.dataGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGrid.BackgroundColor = System.Drawing.Color.White;
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGrid.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGrid.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGrid.Location = new System.Drawing.Point(510, 15);
             this.dataGrid.MultiSelect = false;
             this.dataGrid.Name = "dataGrid";
@@ -138,17 +140,43 @@
             this.statusObhod.Size = new System.Drawing.Size(490, 27);
             this.statusObhod.TabIndex = 4;
             // 
+            // statusCycl
+            // 
+            this.statusCycl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.statusCycl.BackColor = System.Drawing.Color.White;
+            this.statusCycl.Location = new System.Drawing.Point(14, 565);
+            this.statusCycl.Multiline = true;
+            this.statusCycl.Name = "statusCycl";
+            this.statusCycl.ReadOnly = true;
+            this.statusCycl.Size = new System.Drawing.Size(490, 27);
+            this.statusCycl.TabIndex = 4;
+            // 
+            // eCyclBtn
+            // 
+            this.eCyclBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.eCyclBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.eCyclBtn.Location = new System.Drawing.Point(510, 565);
+            this.eCyclBtn.Name = "eCyclBtn";
+            this.eCyclBtn.Size = new System.Drawing.Size(290, 27);
+            this.eCyclBtn.TabIndex = 2;
+            this.eCyclBtn.Text = "Поиск эйлерова цикла";
+            this.eCyclBtn.UseVisualStyleBackColor = true;
+            this.eCyclBtn.Click += new System.EventHandler(this.eCyclBtn_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(812, 642);
+            this.Controls.Add(this.statusCycl);
             this.Controls.Add(this.statusObhod);
             this.Controls.Add(this.dataGrid);
             this.Controls.Add(this.deselectBtn);
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.joinBtn);
+            this.Controls.Add(this.eCyclBtn);
             this.Controls.Add(this.runObhod);
             this.Controls.Add(this.graphPanel);
             this.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -170,6 +198,8 @@
         private System.Windows.Forms.Button deleteBtn;
         private System.Windows.Forms.Button deselectBtn;
         private System.Windows.Forms.TextBox statusObhod;
+        private System.Windows.Forms.TextBox statusCycl;
+        private System.Windows.Forms.Button eCyclBtn;
     }
 }
 

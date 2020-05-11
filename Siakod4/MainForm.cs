@@ -165,7 +165,7 @@ namespace Siakod4
         /// <summary>
         /// Поиск в ширину
         /// </summary>
-        private bool BreadthFirstSearch(IList<Vertice> vertices)
+        private bool BreadthFirstSearch(IList<Vertice> vertices, bool isShow = true)
         {
             if(vertices.Count > 0)
             {
@@ -175,7 +175,8 @@ namespace Siakod4
                 //посещаем первую вершину
                 queue.Enqueue(vertices[0]);
                 visited.Add(vertices[0]);
-                VisitNode(vertices[0]);
+                if(isShow)
+                    VisitNode(vertices[0]);
 
                 Vertice node;
                 while (queue.Count > 0)
@@ -189,14 +190,77 @@ namespace Siakod4
                             //посещаем вершину
                             visited.Add(vertices[i]);
                             queue.Enqueue(vertices[i]);
-                            VisitEdge(node, vertices[i]);
-                            VisitNode(vertices[i]);
+                            if (isShow)
+                            {
+                                VisitEdge(node, vertices[i]);
+                                VisitNode(vertices[i]);
+                            } 
                         }
                 }
 
                 return visited.Count == vertices.Count;
             }
             return false;
+        }
+
+        private void EulerianPath(IList<Vertice> vertices)
+        {
+            if(BreadthFirstSearch(vertices, false))
+            {
+                //проверка четности вершин
+                foreach(var v in vertices)
+                {
+                    if (v.Edges.Count % 2 != 0)
+                    {
+                        statusCycl.Text = "Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень";
+                        return;
+                    }
+                }
+
+                var stack = new Stack<Vertice>();
+                var cycl = new Stack<Vertice>();
+
+                stack.Push(vertices[0]);
+
+                Vertice node;
+                while (stack.Count > 0)
+                {
+                    node = stack.Peek();
+                    var nodeEdges = new List<Edge>(node.GetNotDeletedEdges());
+                    if (nodeEdges.Count() > 0)
+                    {
+                        var u = nodeEdges[0].GetLinkVertice(node);
+                        stack.Push(u);
+                        nodeEdges[0].isDeleted = true;
+                    }
+                    else
+                    {
+                        cycl.Push(stack.Pop());
+                    }
+                }
+
+                foreach (var e in edges)
+                    e.isDeleted = false;
+                ShowCycl(cycl);
+            }
+            else
+            {
+                statusCycl.Text = "Граф не содержит эйлерова цикла, так как граф несвязный";
+            }
+        }
+
+        private void ShowCycl(Stack<Vertice> cycl)
+        {
+            statusCycl.Text = "";
+            Vertice temp = null;
+            foreach (var c in cycl)
+            {
+                if(temp != null)
+                    VisitEdge(temp, c);
+                temp = c;
+                statusCycl.Text += $"-> {c.Text}";
+            }
+            graphPanel.Refresh();
         }
 
         private void VisitNode(Vertice v)
@@ -230,7 +294,14 @@ namespace Siakod4
         {
             foreach (var v in vertices)
                 v.Deselect();
+            foreach (var edge in edges)
+                edge.Deselect();
             graphPanel.Refresh();
+        }
+
+        private void eCyclBtn_Click(object sender, EventArgs e)
+        {
+            EulerianPath(vertices);
         }
     }
 }
