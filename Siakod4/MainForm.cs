@@ -274,6 +274,7 @@ namespace Siakod4
                         {
                             statusCycl.Text = $"Если удалить вершину {v.Text}, то граф станет деревом";
                             v.RestoreSelf();
+                            statusObhod.Text = "";
                             graphPanel.Refresh();
                             return;
                         }
