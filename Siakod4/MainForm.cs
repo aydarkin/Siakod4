@@ -287,7 +287,7 @@ namespace Siakod4
             } 
             else
             {
-                statusCycl.Text = "Граф несвязный";
+                statusCycl.Text = "Нельзя получить дерево из заданного графа, т.к. граф несвязный";
             }
             statusObhod.Text = "";
             graphPanel.Refresh();
