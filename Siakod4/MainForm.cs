@@ -165,9 +165,9 @@ namespace Siakod4
         /// <summary>
         /// Поиск в ширину
         /// </summary>
-        private bool BreadthFirstSearch(IList<Vertice> vertices, bool isShow = true)
+        private bool BreadthFirstSearch(IList<Vertice> vertices, bool isVisit = true, bool isShow = true)
         {
-            if(vertices.Count > 0)
+            if (vertices.Count > 0)
             {
                 var queue = new Queue<Vertice>();
                 var visited = new List<Vertice>();
@@ -175,8 +175,8 @@ namespace Siakod4
                 //посещаем первую вершину
                 queue.Enqueue(vertices[0]);
                 visited.Add(vertices[0]);
-                if(isShow)
-                    VisitNode(vertices[0]);
+                if(isVisit)
+                    VisitNode(vertices[0], isShow);
 
                 Vertice node;
                 while (queue.Count > 0)
@@ -190,10 +190,10 @@ namespace Siakod4
                             //посещаем вершину
                             visited.Add(vertices[i]);
                             queue.Enqueue(vertices[i]);
-                            if (isShow)
+                            if (isVisit)
                             {
-                                VisitEdge(node, vertices[i]);
-                                VisitNode(vertices[i]);
+                                VisitEdge(node, vertices[i], isShow);
+                                VisitNode(vertices[i], isShow);
                             } 
                         }
                 }
@@ -251,6 +251,61 @@ namespace Siakod4
             }
         }
 
+        private void CanBeTree()
+        {
+            if (BreadthFirstSearch(vertices, true, false))
+            {
+                if(!edges.Where((e) => !e.Selected).Any())
+                {
+                    statusCycl.Text = "Граф уже является деревом";
+                    return;
+                }
+
+                foreach (var v in vertices)
+                {
+                    DeselectAll();
+                    v.TempRemoveSelf();
+
+                    var tempVertices = new List<Vertice>(GetNotDeletedVertices());
+                    if (BreadthFirstSearch(tempVertices, true, false))
+                    {
+                        var tempEdges = GetNotDeletedEdges();
+                        if (!tempEdges.Where((e) => !e.Selected).Any())
+                        {
+                            statusCycl.Text = $"Если удалить вершину {v.Text}, то граф станет деревом";
+                            v.RestoreSelf();
+                            graphPanel.Refresh();
+                            return;
+                        }
+                    }
+
+                    v.RestoreSelf();
+                }
+
+                statusCycl.Text = "Удалив одну вершину, нельзя получить дерево из заданного графа";
+            } 
+            else
+            {
+                statusCycl.Text = "Граф несвязный";
+            }
+            statusObhod.Text = "";
+            graphPanel.Refresh();
+        }
+
+        private IEnumerable<Vertice> GetNotDeletedVertices()
+        {
+            foreach (var v in vertices)
+                if (!v.isDeleted)
+                    yield return v;
+        }
+
+        private IEnumerable<Edge> GetNotDeletedEdges()
+        {
+            foreach (var e in edges)
+                if (!e.isDeleted)
+                    yield return e;
+        }
+
         private void ShowCycl(Stack<Vertice> cycl)
         {
             statusCycl.Text = "";
@@ -265,25 +320,32 @@ namespace Siakod4
             graphPanel.Refresh();
         }
 
-        private void VisitNode(Vertice v)
+        private void VisitNode(Vertice v, bool isShow = true)
         {
             v.Select();
             statusObhod.Text += $"-> {v.Text} ";
-            graphPanel.Refresh();
-            Thread.Sleep(700);
+            if (isShow)
+            {
+                graphPanel.Refresh();
+                Thread.Sleep(700);
+            } 
         }
 
-        private void VisitEdge(Vertice v1, Vertice v2)
+        private void VisitEdge(Vertice v1, Vertice v2, bool isShow = true)
         {
             var edge = v1.getLink(v2);
-            VisitEdge(edge);
+            VisitEdge(edge, isShow);
         }
 
-        private void VisitEdge(Edge edge)
+        private void VisitEdge(Edge edge, bool isShow = true)
         {
             edge.Select();
-            graphPanel.Refresh();
-            Thread.Sleep(700);
+            if (isShow)
+            {
+                graphPanel.Refresh();
+                Thread.Sleep(700);
+            }
+            
         }
 
         private void runObhod_Click(object sender, EventArgs e)
@@ -294,16 +356,26 @@ namespace Siakod4
 
         private void deselectBtn_Click(object sender, EventArgs e)
         {
+            DeselectAll();
+            graphPanel.Refresh();
+        }
+
+        private void DeselectAll()
+        {
             foreach (var v in vertices)
                 v.Deselect();
             foreach (var edge in edges)
                 edge.Deselect();
-            graphPanel.Refresh();
         }
 
         private void eCyclBtn_Click(object sender, EventArgs e)
         {
             EulerianPath(vertices);
+        }
+
+        private void canBeTreeBtn_Click(object sender, EventArgs e)
+        {
+            CanBeTree();
         }
     }
 }

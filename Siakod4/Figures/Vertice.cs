@@ -18,6 +18,7 @@ namespace Siakod4.Figures
 
         public string Text;
         public List<Edge> Edges;
+        public bool isDeleted = false;
 
 
         public Vertice(int x, int y, int width, int height, string text)
@@ -56,7 +57,8 @@ namespace Siakod4.Figures
             if (vertice == this)
                 return false;
 
-            foreach (var edge in Edges)
+            var edges = GetNotDeletedEdges();
+            foreach (var edge in edges)
                 if (edge.HasVertice(vertice))
                     return true;
 
@@ -78,6 +80,29 @@ namespace Siakod4.Figures
                 Edges[0].DeleteSelf();
         }
 
+        public void TempRemoveLinks()
+        {
+            foreach (var e in Edges)
+                e.isDeleted = true;
+        }
+
+        public void RestoreLinks()
+        {
+            foreach (var e in Edges)
+                e.isDeleted = false;
+        }
+
+        public void TempRemoveSelf()
+        {
+            isDeleted = true;
+            TempRemoveLinks();
+        }
+
+        public void RestoreSelf()
+        {
+            isDeleted = false;
+            RestoreLinks();
+        }
 
         public override bool isPointInFigure(int x, int y)
         {

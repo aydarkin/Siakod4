@@ -38,6 +38,7 @@
             this.statusObhod = new System.Windows.Forms.TextBox();
             this.statusCycl = new System.Windows.Forms.TextBox();
             this.eCyclBtn = new System.Windows.Forms.Button();
+            this.canBeTreeBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -164,6 +165,18 @@
             this.eCyclBtn.UseVisualStyleBackColor = true;
             this.eCyclBtn.Click += new System.EventHandler(this.eCyclBtn_Click);
             // 
+            // canBeTreeBtn
+            // 
+            this.canBeTreeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.canBeTreeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.canBeTreeBtn.Location = new System.Drawing.Point(510, 531);
+            this.canBeTreeBtn.Name = "canBeTreeBtn";
+            this.canBeTreeBtn.Size = new System.Drawing.Size(290, 27);
+            this.canBeTreeBtn.TabIndex = 2;
+            this.canBeTreeBtn.Text = "Может ли быть деревом";
+            this.canBeTreeBtn.UseVisualStyleBackColor = true;
+            this.canBeTreeBtn.Click += new System.EventHandler(this.canBeTreeBtn_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -176,6 +189,7 @@
             this.Controls.Add(this.deselectBtn);
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.joinBtn);
+            this.Controls.Add(this.canBeTreeBtn);
             this.Controls.Add(this.eCyclBtn);
             this.Controls.Add(this.runObhod);
             this.Controls.Add(this.graphPanel);
@@ -200,6 +214,7 @@
         private System.Windows.Forms.TextBox statusObhod;
         private System.Windows.Forms.TextBox statusCycl;
         private System.Windows.Forms.Button eCyclBtn;
+        private System.Windows.Forms.Button canBeTreeBtn;
     }
 }
 
