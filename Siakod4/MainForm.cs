@@ -18,6 +18,7 @@ namespace Siakod4
         List<Vertice> vertices;
         List<Edge> edges;
         DataTable table;
+        List<Vertice> selected;
 
         public MainForm()
         {
@@ -25,6 +26,7 @@ namespace Siakod4
             vertices = new List<Vertice>();
             edges = new List<Edge>();
             table = new DataTable();
+            selected = new List<Vertice>();
             dataGrid.DataSource = table;
 
             //механизм рефлексии
@@ -52,9 +54,12 @@ namespace Siakod4
 
                 if(!first.HasLink(second))
                 {
-                    edges.Add(new Edge(first, second));
+                    edges.Add(new Edge(first, second, (int)weightNum.Value));
                     first.Deselect();
                     second.Deselect();
+
+                    selected.Remove(first);
+                    selected.Remove(second);
                 }
             }
         }
@@ -64,7 +69,18 @@ namespace Siakod4
             foreach (var v in vertices)
                 if (v.isPointInFigure(e.X, e.Y))
                 {
-                    v.RevertSelection();
+                    if (v.Selected)
+                    {
+                        selected.Remove(v);
+                        v.Deselect();
+                    }
+                    else
+                    {
+                        selected.Add(v);
+                        v.Select();
+                    }
+                        
+
                     graphPanel.Refresh();
                     return;
                 }
@@ -151,15 +167,52 @@ namespace Siakod4
             for (int i = 0; i < length; i++)
                 for (int j = 0; j < length; j++)
                     if (vertices[i].HasLink(vertices[j]))
-                    {
-                        table.Rows[i][j] = '+';
-                        table.Rows[j][i] = '+';
-                    }
+                        table.Rows[i][j] = vertices[i].getLink(vertices[j]).Weight;
                     else
-                    {
                         table.Rows[i][j] = string.Empty;
-                        table.Rows[j][i] = string.Empty;
-                    }
+        }
+
+        private bool DepthFirstSearch(IList<Vertice> vertices, bool isVisit = true, bool isShow = true)
+        {
+            if (vertices.Count > 0)
+            {
+                var stack = new Stack<Vertice>();
+                var visited = new List<Vertice>();
+
+                //посещаем первую вершину
+                stack.Push(vertices[0]);
+                visited.Add(vertices[0]);
+                if (isVisit)
+                    VisitNode(vertices[0], isShow);
+
+                Vertice node;
+                while (stack.Count > 0)
+                {
+                    node = stack.Peek();
+                    bool flag = false;
+                    for (int i = 0; i < vertices.Count; i++)
+                        if (node.HasLink(vertices[i]) && !visited.Contains(vertices[i]))
+                        {
+                            //посещаем вершину
+                            visited.Add(vertices[i]);
+                            stack.Push(vertices[i]);
+                            
+                            if (isVisit)
+                            {
+                                VisitEdge(node, vertices[i], isShow);
+                                VisitNode(vertices[i], isShow);
+                            }
+                            flag = true;
+                            break;
+                        }
+
+                    if(!flag)
+                        stack.Pop();
+                }
+
+                return visited.Count == vertices.Count;
+            }
+            return false;
         }
 
         /// <summary>
@@ -205,14 +258,15 @@ namespace Siakod4
 
         private void EulerianPath(IList<Vertice> vertices)
         {
-            if(BreadthFirstSearch(vertices, false))
+            status.Text = "";
+            if(DepthFirstSearch(vertices, false))
             {
                 //проверка четности вершин
                 foreach(var v in vertices)
                 {
                     if (v.Edges.Count % 2 != 0)
                     {
-                        statusCycl.Text = "Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень";
+                        status.Text = "Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень";
                         return;
                     }
                 }
@@ -247,7 +301,7 @@ namespace Siakod4
             }
             else
             {
-                statusCycl.Text = "Граф не содержит эйлерова цикла, так как граф несвязный";
+                status.Text = "Граф не содержит эйлерова цикла, так как граф несвязный";
             }
         }
 
@@ -257,7 +311,7 @@ namespace Siakod4
             {
                 if(!edges.Where((e) => !e.Selected).Any())
                 {
-                    statusCycl.Text = "Граф уже является деревом";
+                    status.Text = "Граф уже является деревом";
                     return;
                 }
 
@@ -272,7 +326,7 @@ namespace Siakod4
                         var tempEdges = GetNotDeletedEdges();
                         if (!tempEdges.Where((e) => !e.Selected).Any())
                         {
-                            statusCycl.Text = $"Если удалить вершину {v.Text}, то граф станет деревом";
+                            status.Text = $"Если удалить вершину {v.Text}, то граф станет деревом";
                             v.RestoreSelf();
                             statusObhod.Text = "";
                             graphPanel.Refresh();
@@ -283,11 +337,11 @@ namespace Siakod4
                     v.RestoreSelf();
                 }
 
-                statusCycl.Text = "Удалив одну вершину, нельзя получить дерево из заданного графа";
+                status.Text = "Удалив одну вершину, нельзя получить дерево из заданного графа";
             } 
             else
             {
-                statusCycl.Text = "Нельзя получить дерево из заданного графа, т.к. граф несвязный";
+                status.Text = "Нельзя получить дерево из заданного графа, т.к. граф несвязный";
             }
             statusObhod.Text = "";
             graphPanel.Refresh();
@@ -309,14 +363,14 @@ namespace Siakod4
 
         private void ShowCycl(Stack<Vertice> cycl)
         {
-            statusCycl.Text = "";
+            status.Text = "";
             Vertice temp = null;
             foreach (var c in cycl)
             {
                 if(temp != null)
                     VisitEdge(temp, c);
                 temp = c;
-                statusCycl.Text += $"-> {c.Text} ";
+                status.Text += $"-> {c.Text} ";
             }
             graphPanel.Refresh();
         }
@@ -352,7 +406,8 @@ namespace Siakod4
         private void runObhod_Click(object sender, EventArgs e)
         {
             statusObhod.Text = "";
-            BreadthFirstSearch(vertices);
+            //BreadthFirstSearch(vertices);
+            DepthFirstSearch(vertices);
         }
 
         private void deselectBtn_Click(object sender, EventArgs e)
@@ -363,6 +418,7 @@ namespace Siakod4
 
         private void DeselectAll()
         {
+            selected.Clear();
             foreach (var v in vertices)
                 v.Deselect();
             foreach (var edge in edges)
@@ -374,9 +430,98 @@ namespace Siakod4
             EulerianPath(vertices);
         }
 
-        private void canBeTreeBtn_Click(object sender, EventArgs e)
+        private void shortestPathBtn_Click(object sender, EventArgs e)
         {
-            CanBeTree();
+            if(selected.Count >= 2)
+            {
+                var start = int.Parse(selected[0].Text) - 1;
+                var end = int.Parse(selected[1].Text) - 1;
+                DeselectAll();
+
+                var size = vertices.Count;
+                int[,] matrix = new int[size, size];
+
+                //копируем матрицу смежности
+                for (int i = 0; i < size; i++)
+                    for (int j = 0; j < size; j++)
+                        if (table.Rows[i][j].ToString() != "")
+                            matrix[i, j] = int.Parse(table.Rows[i][j].ToString());
+                        else
+                            matrix[i, j] = -1;
+
+                ShortestPath(start, end, matrix);
+                graphPanel.Refresh();
+            }     
+        }
+
+        private void ShortestPath(int start, int end, int[,] matrix)
+        {
+            status.Text = "";
+            int size = matrix.GetLength(0);
+            //посещенные вершины
+            bool[] visited = new bool[size];
+            int visitedCount = 0;
+
+            //метки вершин
+            int[] dist = new int[size];
+            for (int i = 0; i < size; i++)
+            {
+                dist[i] = int.MaxValue;
+            }
+
+            //находим расстояния от начальной вершины к остальным
+            dist[start] = 0;
+            int current = start;
+            while (visitedCount <= size)
+            {
+                visited[current] = true;
+                visitedCount++;
+
+                if (current == end)
+                    break;
+ 
+                for (int i = 0; i < size; i++)
+                    if(matrix[current, i] != -1)
+                    {
+                        var newDist = dist[current] + matrix[current, i];
+                        dist[i] = Math.Min(newDist, dist[i]);
+                    }
+
+                int min = int.MaxValue;
+                for (int i = 0; i < size; i++)
+                    if(!visited[i] && dist[i] < min)
+                    {
+                        min = dist[i];
+                        current = i;
+                    }
+            }
+
+            //восстанавливаем путь
+            var path = new Stack<int>();
+            path.Push(end);
+            while (path.Peek() != start)
+            {
+                int i;
+                for (i = 0; i < size; i++)
+                    if (matrix[path.Peek(), i] != -1)
+                        if (dist[i] == dist[path.Peek()] - matrix[path.Peek(), i])
+                        {
+                            path.Push(i);
+                            break;
+                        }
+                if(i == size)
+                {
+                    status.Text += $"Между вершинами нет пути";
+                    return;
+                }    
+            }    
+
+            foreach (var v in path)
+                status.Text += $"<- {v + 1}";
+
+            int sum = dist[end];
+            status.Text += $" | Расстояние = {sum}";
+
         }
     }
 }

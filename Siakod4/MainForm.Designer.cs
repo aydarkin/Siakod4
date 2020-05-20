@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.graphPanel = new System.Windows.Forms.Panel();
             this.runObhod = new System.Windows.Forms.Button();
             this.dataGrid = new System.Windows.Forms.DataGridView();
@@ -36,10 +36,12 @@
             this.deleteBtn = new System.Windows.Forms.Button();
             this.deselectBtn = new System.Windows.Forms.Button();
             this.statusObhod = new System.Windows.Forms.TextBox();
-            this.statusCycl = new System.Windows.Forms.TextBox();
+            this.status = new System.Windows.Forms.TextBox();
             this.eCyclBtn = new System.Windows.Forms.Button();
-            this.canBeTreeBtn = new System.Windows.Forms.Button();
+            this.shortestPathBtn = new System.Windows.Forms.Button();
+            this.weightNum = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightNum)).BeginInit();
             this.SuspendLayout();
             // 
             // graphPanel
@@ -64,7 +66,7 @@
             this.runObhod.Name = "runObhod";
             this.runObhod.Size = new System.Drawing.Size(290, 27);
             this.runObhod.TabIndex = 2;
-            this.runObhod.Text = "Обход в ширину";
+            this.runObhod.Text = "Обход в глубину";
             this.runObhod.UseVisualStyleBackColor = true;
             this.runObhod.Click += new System.EventHandler(this.runObhod_Click);
             // 
@@ -77,14 +79,14 @@
             this.dataGrid.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGrid.BackgroundColor = System.Drawing.Color.White;
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGrid.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGrid.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGrid.Location = new System.Drawing.Point(510, 15);
             this.dataGrid.MultiSelect = false;
             this.dataGrid.Name = "dataGrid";
@@ -99,7 +101,7 @@
             this.joinBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.joinBtn.Location = new System.Drawing.Point(510, 279);
             this.joinBtn.Name = "joinBtn";
-            this.joinBtn.Size = new System.Drawing.Size(290, 29);
+            this.joinBtn.Size = new System.Drawing.Size(213, 29);
             this.joinBtn.TabIndex = 2;
             this.joinBtn.Text = "Соединить";
             this.joinBtn.UseVisualStyleBackColor = true;
@@ -141,17 +143,17 @@
             this.statusObhod.Size = new System.Drawing.Size(490, 27);
             this.statusObhod.TabIndex = 4;
             // 
-            // statusCycl
+            // status
             // 
-            this.statusCycl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.statusCycl.BackColor = System.Drawing.Color.White;
-            this.statusCycl.Location = new System.Drawing.Point(14, 565);
-            this.statusCycl.Multiline = true;
-            this.statusCycl.Name = "statusCycl";
-            this.statusCycl.ReadOnly = true;
-            this.statusCycl.Size = new System.Drawing.Size(490, 27);
-            this.statusCycl.TabIndex = 4;
+            this.status.BackColor = System.Drawing.Color.White;
+            this.status.Location = new System.Drawing.Point(14, 565);
+            this.status.Multiline = true;
+            this.status.Name = "status";
+            this.status.ReadOnly = true;
+            this.status.Size = new System.Drawing.Size(490, 27);
+            this.status.TabIndex = 4;
             // 
             // eCyclBtn
             // 
@@ -165,17 +167,36 @@
             this.eCyclBtn.UseVisualStyleBackColor = true;
             this.eCyclBtn.Click += new System.EventHandler(this.eCyclBtn_Click);
             // 
-            // canBeTreeBtn
+            // shortestPathBtn
             // 
-            this.canBeTreeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.canBeTreeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.canBeTreeBtn.Location = new System.Drawing.Point(510, 531);
-            this.canBeTreeBtn.Name = "canBeTreeBtn";
-            this.canBeTreeBtn.Size = new System.Drawing.Size(290, 27);
-            this.canBeTreeBtn.TabIndex = 2;
-            this.canBeTreeBtn.Text = "Может ли быть деревом";
-            this.canBeTreeBtn.UseVisualStyleBackColor = true;
-            this.canBeTreeBtn.Click += new System.EventHandler(this.canBeTreeBtn_Click);
+            this.shortestPathBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.shortestPathBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.shortestPathBtn.Location = new System.Drawing.Point(510, 531);
+            this.shortestPathBtn.Name = "shortestPathBtn";
+            this.shortestPathBtn.Size = new System.Drawing.Size(290, 27);
+            this.shortestPathBtn.TabIndex = 2;
+            this.shortestPathBtn.Text = "Кратчайший путь";
+            this.shortestPathBtn.UseVisualStyleBackColor = true;
+            this.shortestPathBtn.Click += new System.EventHandler(this.shortestPathBtn_Click);
+            // 
+            // weightNum
+            // 
+            this.weightNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.weightNum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.weightNum.Location = new System.Drawing.Point(729, 283);
+            this.weightNum.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.weightNum.Name = "weightNum";
+            this.weightNum.Size = new System.Drawing.Size(71, 22);
+            this.weightNum.TabIndex = 5;
+            this.weightNum.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // MainForm
             // 
@@ -183,13 +204,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(812, 642);
-            this.Controls.Add(this.statusCycl);
+            this.Controls.Add(this.weightNum);
+            this.Controls.Add(this.status);
             this.Controls.Add(this.statusObhod);
             this.Controls.Add(this.dataGrid);
             this.Controls.Add(this.deselectBtn);
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.joinBtn);
-            this.Controls.Add(this.canBeTreeBtn);
+            this.Controls.Add(this.shortestPathBtn);
             this.Controls.Add(this.eCyclBtn);
             this.Controls.Add(this.runObhod);
             this.Controls.Add(this.graphPanel);
@@ -198,6 +220,7 @@
             this.Name = "MainForm";
             this.Text = "Граф";
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.weightNum)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,9 +235,10 @@
         private System.Windows.Forms.Button deleteBtn;
         private System.Windows.Forms.Button deselectBtn;
         private System.Windows.Forms.TextBox statusObhod;
-        private System.Windows.Forms.TextBox statusCycl;
+        private System.Windows.Forms.TextBox status;
         private System.Windows.Forms.Button eCyclBtn;
-        private System.Windows.Forms.Button canBeTreeBtn;
+        private System.Windows.Forms.Button shortestPathBtn;
+        private System.Windows.Forms.NumericUpDown weightNum;
     }
 }
 

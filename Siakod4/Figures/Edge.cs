@@ -11,13 +11,15 @@ namespace Siakod4.Figures
     {
         Vertice First;
         Vertice Second;
-
+       
+        public int Weight;
         public bool isDeleted = false;
 
-        public Edge(Vertice first, Vertice second)
+        public Edge(Vertice first, Vertice second, int weight)
         {
             First = first;
             Second = second;
+            Weight = weight;
 
             First.AddEdge(this);
             Second.AddEdge(this);
@@ -59,6 +61,11 @@ namespace Siakod4.Figures
                 pen.Color = Color.Red;
 
             g.DrawLine(pen, First.X, First.Y, Second.X, Second.Y);
+
+            var font = new Font(FontFamily.GenericSansSerif, 16);
+            var x = Math.Min(First.X, Second.X) + Math.Abs(Second.X - First.X) / 2;
+            var y = Math.Min(First.Y, Second.Y) + Math.Abs(Second.Y - First.Y) / 2;
+            g.DrawString(Weight.ToString(), font, new SolidBrush(Color.Black), x + 8, y);
         }
 
         public void DeleteSelf()
