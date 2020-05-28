@@ -20,6 +20,10 @@ namespace Siakod4.Figures
         public List<Edge> Edges;
         public bool isDeleted = false;
 
+        public override string ToString()
+        {
+            return Text;
+        }
 
         public Vertice(int x, int y, int width, int height, string text)
         {

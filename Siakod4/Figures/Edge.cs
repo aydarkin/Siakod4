@@ -25,6 +25,11 @@ namespace Siakod4.Figures
             Second.AddEdge(this);
         }
 
+        public override string ToString()
+        {
+            return First.Text + "-" + Second.Text;
+        }
+
         public override bool isPointInFigure(int x, int y)
         {
             var x1 = First.X;
@@ -63,9 +68,13 @@ namespace Siakod4.Figures
             g.DrawLine(pen, First.X, First.Y, Second.X, Second.Y);
 
             var font = new Font(FontFamily.GenericSansSerif, 16);
-            var x = Math.Min(First.X, Second.X) + Math.Abs(Second.X - First.X) / 2;
-            var y = Math.Min(First.Y, Second.Y) + Math.Abs(Second.Y - First.Y) / 2;
-            g.DrawString(Weight.ToString(), font, new SolidBrush(Color.Black), x + 8, y);
+            var x = Math.Min(First.X, Second.X) + Math.Abs(Second.X - First.X) / 2 + 8;
+            var y = Math.Min(First.Y, Second.Y) + Math.Abs(Second.Y - First.Y) / 2 + 4;
+
+            if ((First.X < Second.X && First.Y < Second.Y) || (First.X > Second.X && First.Y > Second.Y))
+                y -= 8;
+
+            g.DrawString(Weight.ToString(), font, new SolidBrush(Color.Black), x, y);
         }
 
         public void DeleteSelf()

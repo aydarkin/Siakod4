@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -19,6 +20,11 @@ namespace Siakod4
         List<Edge> edges;
         DataTable table;
         List<Vertice> selected;
+
+        //костылим :)
+        string searchFile = "search.txt";
+        string cyclFile = "cycl.txt";
+        string dijkstraFile = "dijkstra.txt";
 
         public MainForm()
         {
@@ -172,20 +178,35 @@ namespace Siakod4
                         table.Rows[i][j] = string.Empty;
         }
 
-        private bool DepthFirstSearch(IList<Vertice> vertices, bool isVisit = true, bool isShow = true)
+        string getStringVertices(IEnumerable<Vertice> list, string delimiter = ", ")
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var elem in list)
+                sb.Append(elem.ToString() + delimiter);
+
+            sb.Remove(sb.Length - delimiter.Length, delimiter.Length);
+
+            return sb.ToString();
+        }
+
+        private bool DepthFirstSearch(IList<Vertice> vertices, StreamWriter sw, bool isVisit = true, bool isShow = true)
         {
             if (vertices.Count > 0)
             {
                 var stack = new Stack<Vertice>();
-                var visited = new List<Vertice>();
-
+                var visited = new List<Vertice>();               
                 //посещаем первую вершину
                 stack.Push(vertices[0]);
                 visited.Add(vertices[0]);
                 if (isVisit)
+                {
+                    sw.WriteLine($"Помещаем вершину {vertices[0]} в стек и помечаем ее как посещенную");
                     VisitNode(vertices[0], isShow);
+                }           
 
                 Vertice node;
+                sw.WriteLine("Пока стек не пустой: ");
                 while (stack.Count > 0)
                 {
                     node = stack.Peek();
@@ -199,6 +220,7 @@ namespace Siakod4
                             
                             if (isVisit)
                             {
+                                sw.WriteLine($"У вершины стека ({node}) находим первую смежную вершину ({vertices[i]}), заносим в стек и помечаем как посещенную. Текущий стек: [{getStringVertices(stack)}]");
                                 VisitEdge(node, vertices[i], isShow);
                                 VisitNode(vertices[i], isShow);
                             }
@@ -206,10 +228,13 @@ namespace Siakod4
                             break;
                         }
 
-                    if(!flag)
+                    if (!flag)
+                    {
+                        sw.WriteLine($"Вершина стека ({node}) не имеет непосещенных смежных вершин, соответственно вынимаем ее из стека. Текущий стек: [{getStringVertices(stack)}]");
                         stack.Pop();
+                    }
                 }
-
+                sw.WriteLine($"Стек пуст. Завершаем алгоритм. Было посещено {visited.Count} из {vertices.Count} вершин");
                 return visited.Count == vertices.Count;
             }
             return false;
@@ -218,7 +243,7 @@ namespace Siakod4
         /// <summary>
         /// Поиск в ширину
         /// </summary>
-        private bool BreadthFirstSearch(IList<Vertice> vertices, bool isVisit = true, bool isShow = true)
+        private bool BreadthFirstSearch(IList<Vertice> vertices, StreamWriter sw, bool isVisit = true, bool isShow = true)
         {
             if (vertices.Count > 0)
             {
@@ -229,13 +254,19 @@ namespace Siakod4
                 queue.Enqueue(vertices[0]);
                 visited.Add(vertices[0]);
                 if(isVisit)
+                {
+                    sw.WriteLine($"Помещаем вершину {vertices[0]} в очередь. Помечаем эту вершину как посещенную");
                     VisitNode(vertices[0], isShow);
+                }
+                    
 
                 Vertice node;
+                sw.WriteLine("Пока очередь не пуста: ");
                 while (queue.Count > 0)
                 {
                     //убираем из очереди
                     node = queue.Dequeue();
+                    sw.WriteLine($"Вынимаем из очереди текущую вершину ({node}). Ищем непосещенные смежные вершины текущей вершины в порядке возрастания: ");
                     //среди связанных ищем не посещенные в порядке возрастания
                     for (int i = 0; i < vertices.Count; i++)
                         if(node.HasLink(vertices[i]) && !visited.Contains(vertices[i]))
@@ -245,52 +276,68 @@ namespace Siakod4
                             queue.Enqueue(vertices[i]);
                             if (isVisit)
                             {
+                                sw.WriteLine($"Заносим в очередь смежную вершину {vertices[i]} и помечаем ее как посещенную. Очередь: [{getStringVertices(queue)}]");
                                 VisitEdge(node, vertices[i], isShow);
                                 VisitNode(vertices[i], isShow);
                             } 
                         }
+                    sw.WriteLine("Смежных непосещенных вершин больше нет у текущей вершины.");
                 }
-
+                sw.WriteLine($"Очередь пуста. Было посещено {visited.Count} из {vertices.Count} вершин. Завершаем алгоритм.");
                 return visited.Count == vertices.Count;
             }
             return false;
         }
 
-        private void EulerianPath(IList<Vertice> vertices)
+        private void EulerianPath(IList<Vertice> vertices, StreamWriter sw)
         {
             status.Text = "";
-            if(DepthFirstSearch(vertices, false))
+            var sw1 = new StreamWriter(searchFile);
+            sw.Write("Проверяем граф на связность. ");
+            if (DepthFirstSearch(vertices, sw1, false))
             {
+                sw.WriteLine("Граф связный.");
+
+                sw.Write("Проверяем вершины на четность смежных вершин. ");
                 //проверка четности вершин
-                foreach(var v in vertices)
+                foreach (var v in vertices)
                 {
                     if (v.Edges.Count % 2 != 0)
                     {
+                        sw.Write("Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень");
                         status.Text = "Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень";
+                        sw.Close();
                         return;
                     }
                 }
+                sw.WriteLine("Все вершины имеют четную степень.");
+                sw.WriteLine("Начинаем поиск эйлерового цикла.");
 
                 var stack = new Stack<Vertice>();
                 var cycl = new Stack<Vertice>();
 
                 stack.Push(vertices[0]);
-
+                sw.WriteLine($"Помещаем во временный стек начальную вершину ({vertices[0]}).");
+                sw.WriteLine("Пока временный стек не пустой: ");
                 Vertice node;
                 while (stack.Count > 0)
                 {
                     node = stack.Peek();
                     var nodeEdges = new List<Edge>(node.GetNotDeletedEdges());
                     if (nodeEdges.Count() > 0)
-                    {
+                    {                       
                         var u = nodeEdges[0].GetLinkVertice(node);
                         stack.Push(u);
                         //удаляем ребро
                         nodeEdges[0].isDeleted = true;
+
+                        sw.WriteLine($"У вершины стека ({node}) находим первую смежную вершину ({u}), заносим ее во временный стек. Ребро, соединяющее эти вершины удаляем из графа. Временный стек: [{getStringVertices(stack)}]");
                     }
                     else
                     {
                         cycl.Push(stack.Pop());
+                        sw.WriteLine($"Вершина стека ({node}) не имеет смежных вершин. Вынимаем ее из временного стека и помещаем в стек, хранящий эйлеров цикл [{getStringVertices(cycl)}].");
+
                     }
                 }
 
@@ -298,16 +345,21 @@ namespace Siakod4
                 foreach (var e in edges)
                     e.isDeleted = false;
                 ShowCycl(cycl);
+
+                sw.WriteLine($"Эйлеров цикл: {getStringVertices(cycl, " - ")}.");
             }
             else
             {
+                sw.WriteLine("Граф не содержит эйлерова цикла, так как граф несвязный.");
                 status.Text = "Граф не содержит эйлерова цикла, так как граф несвязный";
             }
+            sw1.Close();
         }
 
         private void CanBeTree()
         {
-            if (BreadthFirstSearch(vertices, true, false))
+            var sw = new StreamWriter(searchFile);
+            if (BreadthFirstSearch(vertices, sw, true, false))
             {
                 if(!edges.Where((e) => !e.Selected).Any())
                 {
@@ -321,7 +373,7 @@ namespace Siakod4
                     v.TempRemoveSelf();
 
                     var tempVertices = new List<Vertice>(GetNotDeletedVertices());
-                    if (BreadthFirstSearch(tempVertices, true, false))
+                    if (BreadthFirstSearch(tempVertices, sw, true, false))
                     {
                         var tempEdges = GetNotDeletedEdges();
                         if (!tempEdges.Where((e) => !e.Selected).Any())
@@ -407,7 +459,9 @@ namespace Siakod4
         {
             statusObhod.Text = "";
             //BreadthFirstSearch(vertices);
-            DepthFirstSearch(vertices);
+            var sw = new StreamWriter(searchFile);
+            DepthFirstSearch(vertices, sw);
+            sw.Close();
         }
 
         private void deselectBtn_Click(object sender, EventArgs e)
@@ -427,7 +481,9 @@ namespace Siakod4
 
         private void eCyclBtn_Click(object sender, EventArgs e)
         {
-            EulerianPath(vertices);
+            var sw = new StreamWriter(cyclFile);
+            EulerianPath(vertices, sw);
+            sw.Close();
         }
 
         private void shortestPathBtn_Click(object sender, EventArgs e)
@@ -449,13 +505,57 @@ namespace Siakod4
                         else
                             matrix[i, j] = -1;
 
-                ShortestPath(start, end, matrix);
+                using (var sw = new StreamWriter(dijkstraFile))
+                {
+                    sw.WriteLine("Матрица смежности графа: ");
+                    for (int i = 0; i < size; i++)
+                    {
+                        sw.Write("[");
+                        for (int j = 0; j < size; j++)
+                        {
+                            if(matrix[i, j] == -1)
+                                sw.Write("-");
+                            else
+                                sw.Write($"{matrix[i, j]}");
+
+                            if (j != size - 1)
+                                sw.Write(", ");
+                        }
+                        sw.WriteLine("]");
+                    }
+                        
+
+                   ShortestPath(start, end, matrix, sw);
+                }
                 graphPanel.Refresh();
             }     
         }
 
-        private void ShortestPath(int start, int end, int[,] matrix)
+        string stringInts(IEnumerable<int> array, string delimiter = ", ", bool isPlus1 = false)
         {
+            var sb = new StringBuilder();
+
+            foreach (var el in array)
+                if(isPlus1)
+                    sb.Append(stringNum(el+1) + delimiter);
+                else
+                    sb.Append(stringNum(el) + delimiter);
+
+            sb.Remove(sb.Length - delimiter.Length, delimiter.Length);
+            return sb.ToString();
+        }
+
+        string stringNum(int num)
+        {
+            if (num != int.MaxValue)
+                return num.ToString();
+            else
+                return "inf";
+        }
+
+        private void ShortestPath(int start, int end, int[,] matrix, StreamWriter sw)
+        {
+            sw.WriteLine($"Начальная вершина - {start+1}, конечная - {end+1}.");
             status.Text = "";
             int size = matrix.GetLength(0);
             //посещенные вершины
@@ -468,24 +568,43 @@ namespace Siakod4
             {
                 dist[i] = int.MaxValue;
             }
+            sw.WriteLine($"Задаем метки всех вершин бесконечностью: [{stringInts(dist)}].");
 
             //находим расстояния от начальной вершины к остальным
             dist[start] = 0;
+            sw.WriteLine($"Метку начальной вершины {start+1} задаем нулем.");
+            sw.WriteLine($"Метки: [{stringInts(dist)}]");
+
             int current = start;
             while (visitedCount <= size)
             {
                 visited[current] = true;
                 visitedCount++;
 
+                sw.Write($"Посещаем вершину {current+1}. ");
+
                 if (current == end)
+                {
+                    sw.WriteLine($"Конечная вершина посещена. Длина пути = {dist[end]}.");
                     break;
- 
+                }
+
+                sw.WriteLine($"Пересчитываем метки непосещенных смежных вершин: ");
+                bool flag = false;
                 for (int i = 0; i < size; i++)
-                    if(matrix[current, i] != -1)
+                    if(!visited[i] && matrix[current, i] != -1)
                     {
+                        flag = true;
+                        sw.Write($"Метка вершины {i + 1} = min({stringNum(dist[current])} + {matrix[current, i]}, {stringNum(dist[i])}) = ");
                         var newDist = dist[current] + matrix[current, i];
                         dist[i] = Math.Min(newDist, dist[i]);
+
+                        sw.WriteLine($"{stringNum(dist[i])}.");
                     }
+                if(!flag)
+                    sw.WriteLine($"Смежных непосещенных вершин нет.");
+
+                sw.WriteLine($"Метки: [{stringInts(dist)}]");
 
                 int min = int.MaxValue;
                 for (int i = 0; i < size; i++)
@@ -494,34 +613,52 @@ namespace Siakod4
                         min = dist[i];
                         current = i;
                     }
+
+                sw.WriteLine($"Минимальное значение метки среди непосещенных вершин = {min}, соответственно текущая вершина = {current+1}");
+            }       
+
+            if (dist[end] == int.MaxValue)
+            {
+                sw.WriteLine($"Между вершинами {start + 1} и {end + 1} нет пути.");
+                status.Text += $"Между вершинами {start + 1} и {end + 1} нет пути";
+                return;
             }
 
+
             //восстанавливаем путь
+            sw.WriteLine("Восстанавливаем путь с конца: ");
+            sw.WriteLine($"Добавляем в стек пути конечную вершину вершину {end+1}.");
             var path = new Stack<int>();
             path.Push(end);
             while (path.Peek() != start)
             {
+                sw.WriteLine($"Текущая вершина {path.Peek()+1}. Ищем подходящую смежную вершину: ");
                 int i;
                 for (i = 0; i < size; i++)
                     if (matrix[path.Peek(), i] != -1)
-                        if (dist[i] == dist[path.Peek()] - matrix[path.Peek(), i])
+                    {
+                        sw.Write($"({i+1}): ");
+                        var temp = dist[path.Peek()] - matrix[path.Peek(), i];
+                        if (dist[i] == temp)
                         {
+                            sw.WriteLine($"Метка вершины {i+1} = {stringNum(dist[i])} = метка вершины ({path.Peek()+1}) - длина ребра ({path.Peek()+1}-{i+1}) = {dist[path.Peek()]}-{matrix[path.Peek(), i]} = {stringNum(dist[i])}. Подходящая вешина найдена. Добавляем вершину {i+1} в стек пути. Путь: [{stringInts(path, isPlus1: true)}]");
                             path.Push(i);
                             break;
                         }
-                if(i == size)
-                {
-                    status.Text += $"Между вершинами нет пути";
-                    return;
-                }    
-            }    
+                        else
+                            sw.WriteLine($"Метка вершины {i + 1} = {stringNum(dist[i])} != метка вершины ({path.Peek() + 1}) - длина ребра ({path.Peek() + 1}-{i + 1}) = {dist[path.Peek()]}-{matrix[path.Peek(), i]} = {stringNum(temp)}. Не подходит.");
+                    }
+                          
+            }
+
+            sw.WriteLine($"Вершина {start+1} является начальной. Путь восстановлен.");
+            sw.WriteLine($"Кратчайший путь между вершинами {start+1} и {end+1}: {stringInts(path, "-", true)}. Длина пути = {dist[end]}.");
 
             foreach (var v in path)
                 status.Text += $"<- {v + 1}";
 
             int sum = dist[end];
             status.Text += $" | Расстояние = {sum}";
-
         }
     }
 }
