@@ -72,7 +72,7 @@ namespace Siakod4.Figures
             var y = Math.Min(First.Y, Second.Y) + Math.Abs(Second.Y - First.Y) / 2 + 4;
 
             if ((First.X < Second.X && First.Y < Second.Y) || (First.X > Second.X && First.Y > Second.Y))
-                y -= 8;
+                y -= 32;
 
             g.DrawString(Weight.ToString(), font, new SolidBrush(Color.Black), x, y);
         }

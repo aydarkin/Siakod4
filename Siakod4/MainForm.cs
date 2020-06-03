@@ -185,7 +185,8 @@ namespace Siakod4
             foreach (var elem in list)
                 sb.Append(elem.ToString() + delimiter);
 
-            sb.Remove(sb.Length - delimiter.Length, delimiter.Length);
+            if(list.Count() > 0)
+                sb.Remove(sb.Length - delimiter.Length, delimiter.Length);
 
             return sb.ToString();
         }
@@ -230,8 +231,9 @@ namespace Siakod4
 
                     if (!flag)
                     {
-                        sw.WriteLine($"Вершина стека ({node}) не имеет непосещенных смежных вершин, соответственно вынимаем ее из стека. Текущий стек: [{getStringVertices(stack)}]");
+                        sw.Write($"Вершина стека ({node}) не имеет непосещенных смежных вершин, соответственно вынимаем ее из стека. ");
                         stack.Pop();
+                        sw.WriteLine($"Текущий стек: [{getStringVertices(stack)}]");
                     }
                 }
                 sw.WriteLine($"Стек пуст. Завершаем алгоритм. Было посещено {visited.Count} из {vertices.Count} вершин");
@@ -294,9 +296,10 @@ namespace Siakod4
             status.Text = "";
             var sw1 = new StreamWriter(searchFile);
             sw.Write("Проверяем граф на связность. ");
+            //if (BreadthFirstSearch(vertices, sw1, false))
             if (DepthFirstSearch(vertices, sw1, false))
             {
-                sw.WriteLine("Граф связный.");
+                sw.WriteLine("Алгоритм обхода в глубину прошел все вершины графа. Граф связный.");
 
                 sw.Write("Проверяем вершины на четность смежных вершин. ");
                 //проверка четности вершин
@@ -304,7 +307,7 @@ namespace Siakod4
                 {
                     if (v.Edges.Count % 2 != 0)
                     {
-                        sw.Write("Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень");
+                        sw.Write($"Вершина {v.Text} имеет нечетное количество ребер. Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень");
                         status.Text = "Граф не содержит эйлерова цикла, так как не все вершины имеют четную степень";
                         sw.Close();
                         return;
@@ -331,7 +334,7 @@ namespace Siakod4
                         //удаляем ребро
                         nodeEdges[0].isDeleted = true;
 
-                        sw.WriteLine($"У вершины стека ({node}) находим первую смежную вершину ({u}), заносим ее во временный стек. Ребро, соединяющее эти вершины удаляем из графа. Временный стек: [{getStringVertices(stack)}]");
+                        sw.WriteLine($"У вершины стека ({node}) находим первую смежную вершину ({u}), заносим ее во временный стек. Ребро, соединяющее эти вершины, удаляем из графа. Временный стек: [{getStringVertices(stack)}]");
                     }
                     else
                     {
@@ -458,9 +461,9 @@ namespace Siakod4
         private void runObhod_Click(object sender, EventArgs e)
         {
             statusObhod.Text = "";
-            //BreadthFirstSearch(vertices);
             var sw = new StreamWriter(searchFile);
             DepthFirstSearch(vertices, sw);
+            //BreadthFirstSearch(vertices, sw);
             sw.Close();
         }
 
@@ -541,7 +544,8 @@ namespace Siakod4
                 else
                     sb.Append(stringNum(el) + delimiter);
 
-            sb.Remove(sb.Length - delimiter.Length, delimiter.Length);
+            if(array.Count() > 0)
+                sb.Remove(sb.Length - delimiter.Length, delimiter.Length);
             return sb.ToString();
         }
 

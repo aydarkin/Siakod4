@@ -65,7 +65,7 @@
             this.runObhod.Location = new System.Drawing.Point(510, 598);
             this.runObhod.Name = "runObhod";
             this.runObhod.Size = new System.Drawing.Size(290, 27);
-            this.runObhod.TabIndex = 2;
+            this.runObhod.TabIndex = 6;
             this.runObhod.Text = "Обход в глубину";
             this.runObhod.UseVisualStyleBackColor = true;
             this.runObhod.Click += new System.EventHandler(this.runObhod_Click);
@@ -94,6 +94,7 @@
             this.dataGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataGrid.Size = new System.Drawing.Size(290, 212);
             this.dataGrid.TabIndex = 3;
+            this.dataGrid.TabStop = false;
             // 
             // joinBtn
             // 
@@ -102,7 +103,7 @@
             this.joinBtn.Location = new System.Drawing.Point(510, 279);
             this.joinBtn.Name = "joinBtn";
             this.joinBtn.Size = new System.Drawing.Size(213, 29);
-            this.joinBtn.TabIndex = 2;
+            this.joinBtn.TabIndex = 0;
             this.joinBtn.Text = "Соединить";
             this.joinBtn.UseVisualStyleBackColor = true;
             this.joinBtn.Click += new System.EventHandler(this.joinBtn_Click);
@@ -126,7 +127,7 @@
             this.deselectBtn.Location = new System.Drawing.Point(510, 416);
             this.deselectBtn.Name = "deselectBtn";
             this.deselectBtn.Size = new System.Drawing.Size(290, 29);
-            this.deselectBtn.TabIndex = 2;
+            this.deselectBtn.TabIndex = 3;
             this.deselectBtn.Text = "Убрать выделение всем";
             this.deselectBtn.UseVisualStyleBackColor = true;
             this.deselectBtn.Click += new System.EventHandler(this.deselectBtn_Click);
@@ -141,7 +142,7 @@
             this.statusObhod.Name = "statusObhod";
             this.statusObhod.ReadOnly = true;
             this.statusObhod.Size = new System.Drawing.Size(490, 27);
-            this.statusObhod.TabIndex = 4;
+            this.statusObhod.TabIndex = 8;
             // 
             // status
             // 
@@ -153,7 +154,7 @@
             this.status.Name = "status";
             this.status.ReadOnly = true;
             this.status.Size = new System.Drawing.Size(490, 27);
-            this.status.TabIndex = 4;
+            this.status.TabIndex = 7;
             // 
             // eCyclBtn
             // 
@@ -162,7 +163,7 @@
             this.eCyclBtn.Location = new System.Drawing.Point(510, 565);
             this.eCyclBtn.Name = "eCyclBtn";
             this.eCyclBtn.Size = new System.Drawing.Size(290, 27);
-            this.eCyclBtn.TabIndex = 2;
+            this.eCyclBtn.TabIndex = 5;
             this.eCyclBtn.Text = "Поиск эйлерова цикла";
             this.eCyclBtn.UseVisualStyleBackColor = true;
             this.eCyclBtn.Click += new System.EventHandler(this.eCyclBtn_Click);
@@ -174,7 +175,7 @@
             this.shortestPathBtn.Location = new System.Drawing.Point(510, 531);
             this.shortestPathBtn.Name = "shortestPathBtn";
             this.shortestPathBtn.Size = new System.Drawing.Size(290, 27);
-            this.shortestPathBtn.TabIndex = 2;
+            this.shortestPathBtn.TabIndex = 4;
             this.shortestPathBtn.Text = "Кратчайший путь";
             this.shortestPathBtn.UseVisualStyleBackColor = true;
             this.shortestPathBtn.Click += new System.EventHandler(this.shortestPathBtn_Click);
@@ -191,7 +192,7 @@
             0});
             this.weightNum.Name = "weightNum";
             this.weightNum.Size = new System.Drawing.Size(71, 22);
-            this.weightNum.TabIndex = 5;
+            this.weightNum.TabIndex = 1;
             this.weightNum.Value = new decimal(new int[] {
             1,
             0,
