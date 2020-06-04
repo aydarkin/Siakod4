@@ -589,7 +589,7 @@ namespace Siakod4
 
                 if (current == end)
                 {
-                    sw.WriteLine($"Конечная вершина посещена. Длина пути = {dist[end]}.");
+                    sw.WriteLine($"Конечная вершина посещена. Длина пути = {stringNum(dist[end])}.");
                     break;
                 }
 
@@ -608,17 +608,28 @@ namespace Siakod4
                 if(!flag)
                     sw.WriteLine($"Смежных непосещенных вершин нет.");
 
-                sw.WriteLine($"Метки: [{stringInts(dist)}]");
+                sw.WriteLine($"Метки: [{stringInts(dist)}].");
 
                 int min = int.MaxValue;
+                int lastNotVisited = current;
                 for (int i = 0; i < size; i++)
-                    if(!visited[i] && dist[i] < min)
+                    if (!visited[i])
                     {
-                        min = dist[i];
-                        current = i;
+                        lastNotVisited = i;
+                        if (dist[i] < min)
+                        {
+                            min = dist[i];
+                            current = i;
+                        }
                     }
 
-                sw.WriteLine($"Минимальное значение метки среди непосещенных вершин = {min}, соответственно текущая вершина = {current+1}");
+                if (min == int.MaxValue)
+                    current = lastNotVisited;
+
+                if (visitedCount == size)
+                    sw.WriteLine($"Все вершины посещены. ");
+                else
+                    sw.WriteLine($"Минимальное значение метки среди непосещенных вершин = {stringNum(min)}, соответственно текущая вершина = {current + 1}.");
             }       
 
             if (dist[end] == int.MaxValue)
@@ -631,7 +642,7 @@ namespace Siakod4
 
             //восстанавливаем путь
             sw.WriteLine("Восстанавливаем путь с конца: ");
-            sw.WriteLine($"Добавляем в стек пути конечную вершину вершину {end+1}.");
+            sw.WriteLine($"Добавляем в стек пути конечную вершину {end+1}.");
             var path = new Stack<int>();
             path.Push(end);
             while (path.Peek() != start)
@@ -645,7 +656,7 @@ namespace Siakod4
                         var temp = dist[path.Peek()] - matrix[path.Peek(), i];
                         if (dist[i] == temp)
                         {
-                            sw.WriteLine($"Метка вершины {i+1} = {stringNum(dist[i])} = метка вершины ({path.Peek()+1}) - длина ребра ({path.Peek()+1}-{i+1}) = {dist[path.Peek()]}-{matrix[path.Peek(), i]} = {stringNum(dist[i])}. Подходящая вешина найдена. Добавляем вершину {i+1} в стек пути. Путь: [{stringInts(path, isPlus1: true)}]");
+                            sw.WriteLine($"Метка вершины {i+1} = {stringNum(dist[i])} = метка вершины ({path.Peek()+1}) - длина ребра ({path.Peek()+1}-{i+1}) = {dist[path.Peek()]}-{matrix[path.Peek(), i]} = {stringNum(dist[i])}. Подходящая вершина найдена. Добавляем вершину {i+1} в стек пути. Путь: [{stringInts(path, isPlus1: true)}]");
                             path.Push(i);
                             break;
                         }
